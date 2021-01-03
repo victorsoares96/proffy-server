@@ -1,20 +1,31 @@
 import Knex from 'knex';
 
 export async function up(knex: Knex) {
-  return knex.schema.createTable('class_schedule', table => {
+  return knex.schema.createTable('class_schedule', (table) => {
     table.increments('id').primary();
-    
-    table.integer('week_day').notNullable();
-    table.integer('from').notNullable();
-    table.integer('to').notNullable();
 
-    table.integer('class_id')
+    table.integer('week_day').notNullable();
+    table.string('from').notNullable();
+    table.integer('from_minutes').notNullable();
+    table.string('to').notNullable();
+    table.integer('to_minutes').notNullable();
+
+    table
+      .integer('class_id')
       .notNullable()
       .references('id')
       .inTable('classes')
-      .onDelete('CASCADE')
       .onUpdate('CASCADE')
-  })
+      .onDelete('CASCADE');
+
+    table
+      .integer('owner_id')
+      .notNullable()
+      .references('id')
+      .inTable('users')
+      .onUpdate('CASCADE')
+      .onDelete('CASCADE');
+  });
 }
 
 export async function down(knex: Knex) {

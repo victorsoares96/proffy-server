@@ -1,15 +1,36 @@
-import express from 'express';
+import { Router } from 'express';
+import authMiddleware from './middlewares/auth';
 import ClassesController from './controllers/ClassesController';
 import ConnectionsController from './controllers/ConnectionsController';
+import SessionController from './controllers/SessionController';
+import UserController from './controllers/UsersController';
+import FavoritesController from './controllers/FavoritesController';
 
-const routes = express.Router();
-const classesControllers = new ClassesController();
-const connectionsControllers = new ConnectionsController();
+const routes = Router();
+const classesController = new ClassesController();
+const connectionController = new ConnectionsController();
+const sessionController = new SessionController();
+const userController = new UserController();
+const favController = new FavoritesController();
 
-routes.get('/classes', classesControllers.index);
-routes.post('/classes', classesControllers.create);
+routes.post('/sessions', sessionController.store);
+routes.post('/users', userController.store);
 
-routes.get('/connections', connectionsControllers.index);
-routes.post('/connections', connectionsControllers.create);
+routes.use(authMiddleware);
+
+routes.post('/classes/:id', classesController.store);
+routes.put('/classes/:id', classesController.update);
+routes.get('/classes', classesController.index);
+routes.get('/classes/:class_id', classesController.show);
+
+routes.post('/connections', connectionController.store);
+routes.get('/connections', connectionController.index);
+
+routes.put('/users/:id', userController.update);
+routes.get('/users/:id', userController.show);
+
+routes.get('/favorites/:user_id', favController.index);
+routes.post('/favorites/:user_id', favController.store);
+routes.delete('/favorites/:class_id', favController.delete);
 
 export default routes;
